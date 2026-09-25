@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: aris-iptv-web
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
+    autoDeploy: true

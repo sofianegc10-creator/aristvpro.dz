@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARIS IPTV — Administration</title><link rel="stylesheet" href="style.css">
+<style>
+.admin{min-height:100vh;background:#071526;color:#fff;padding:35px 5%}.admin-wrap{max-width:1200px;margin:auto}.admin-head{display:flex;justify-content:space-between;align-items:center;gap:20px}.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:25px 0}.stat,.panel{background:#0d2743;border:1px solid #ffffff16;border-radius:16px;padding:22px}.stat b{font-size:30px;color:#ffc928;display:block}.panel{margin-top:15px}.panel input,.panel select{width:100%;padding:12px;border-radius:8px;border:0;margin:7px 0}.panel button{margin-top:8px}.table{width:100%;border-collapse:collapse;margin-top:12px}.table th,.table td{padding:11px;border-bottom:1px solid #ffffff12;text-align:left;font-size:13px}.danger{background:#b83232;color:#fff}.muted{color:#9fb4ca;font-size:12px;line-height:1.6}
+@media(max-width:800px){.admin-grid{grid-template-columns:1fr}.table{display:block;overflow:auto}}
+</style></head>
+<body class="admin"><div class="admin-wrap">
+<div class="admin-head"><div><div class="eyebrow">ARIS IPTV</div><h1>Administration</h1><p class="muted">Prototype local : les données sont enregistrées dans ce navigateur. Ce panneau n'est pas un système d'administration sécurisé.</p></div><a class="btn btn-outline" href="index.html">← Retour au site</a></div>
+<div class="admin-grid"><div class="stat"><b id="usersCount">0</b>Clients locaux</div><div class="stat"><b id="codesCount">0</b>Codes de test</div><div class="stat"><b id="ordersCount">0</b>Demandes</div></div>
+<div class="panel"><h2>Ajouter un client</h2><input id="uName" placeholder="Nom"><input id="uContact" placeholder="WhatsApp / email"><select id="uPlan"><option>1 MOIS</option><option>3 MOIS</option><option>6 MOIS</option><option>12 MOIS</option></select><button class="btn btn-gold" id="addUser">Ajouter</button></div>
+<div class="panel"><h2>Générer un code test</h2><button class="btn btn-gold" id="addCode">Créer un code 12H</button><table class="table"><thead><tr><th>Code</th><th>Statut</th><th>Créé</th><th></th></tr></thead><tbody id="codesTable"></tbody></table></div>
+<div class="panel"><h2>Clients</h2><table class="table"><thead><tr><th>Nom</th><th>Contact</th><th>Offre</th><th></th></tr></thead><tbody id="usersTable"></tbody></table></div>
+</div><script>
+const get=(k,d=[])=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)); const set=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+function id(){return Math.random().toString(36).slice(2,8).toUpperCase()}
+function render(){const u=get("aris_users"),c=get("aris_codes"),o=get("aris_orders");usersCount.textContent=u.length;codesCount.textContent=c.length;ordersCount.textContent=o.length;
+usersTable.innerHTML=u.map((x,i)=>`<tr><td>${x.name}</td><td>${x.contact}</td><td>${x.plan}</td><td><button class="btn danger" onclick="delUser(${i})">Supprimer</button></td></tr>`).join("");
+codesTable.innerHTML=c.map((x,i)=>`<tr><td><b>${x.code}</b></td><td>${x.active?"Actif":"Désactivé"}</td><td>${x.date}</td><td><button class="btn btn-outline" onclick="toggleCode(${i})">${x.active?"Désactiver":"Activer"}</button></td></tr>`).join("")}
+addUser.onclick=()=>{if(!uName.value.trim())return;let u=get("aris_users");u.push({name:uName.value.trim(),contact:uContact.value.trim(),plan:uPlan.value});set("aris_users",u);uName.value="";uContact.value="";render()};
+addCode.onclick=()=>{let c=get("aris_codes");c.push({code:"ARIS-"+id()+"-"+id().slice(0,4),active:true,date:new Date().toLocaleString("fr-FR")});set("aris_codes",c);render()};
+function delUser(i){let u=get("aris_users");u.splice(i,1);set("aris_users",u);render()}
+function toggleCode(i){let c=get("aris_codes");c[i].active=!c[i].active;set("aris_codes",c);render()}
+render();
+</script></body></html>
